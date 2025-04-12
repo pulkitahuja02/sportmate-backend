@@ -37,7 +37,7 @@ pool.connect()
     pool.query(`
      CREATE TABLE IF NOT EXISTS emailotp (
       id SERIAL PRIMARY KEY,
-      email TEXT NOT NULL UNIQUE,
+      email TEXT NOT NULL,
       otp TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
