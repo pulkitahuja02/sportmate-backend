@@ -32,6 +32,20 @@ pool.connect()
         console.log("Users table is ready");
       }
     });
+
+    // Create email table if it doesn't exist
+    pool.query(`
+      CREATE TABLE IF NOT EXISTS email (
+        email_id SERIAL PRIMARY KEY,
+        email_address TEXT NOT NULL UNIQUE
+      )
+    `, (err, res) => {
+      if (err) {
+        console.error("Error creating email table:", err);
+      } else {
+        console.log("Email table is ready");
+      }
+    });
   })
   .catch(err => console.error("Error connecting to PostgreSQL:", err));
 
