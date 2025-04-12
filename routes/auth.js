@@ -1,28 +1,57 @@
 import express from "express";
-import pool from "../database.js"; // PostgreSQL connection
+import pool from "../database.js";
+import { sendOTPEmail } from "../services/emailService.js";
 
 const router = express.Router();
 
-// Signup Route
-router.post("/signup", async (req, res) => {
-  const { name, age, gender, address, sports } = req.body;
-
-  if (!name || !age || !gender || !address || !sports) {
-    return res.status(400).json({ error: "All fields are required." });
-  }
-
-  const query = `
-    INSERT INTO users (name, age, gender, address, sports)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING id
-  `;
+// Generate OTP and store in sports column temporarily
+router.post("/send-otp", async (req, res) => {
+  const { email } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+  const otpData = `OTP:${otp}|${email}`;
 
   try {
-    const result = await pool.query(query, [name, age, gender, address, sports.join(", ")]);
-    res.json({ message: "User created successfully!", id: result.rows[0].id });
+    // Store OTP in sports column with 5-minute expiry
+    await pool.query(
+      `INSERT INTO users (sports) VALUES ($1)
+       ON CONFLICT (email) DO UPDATE SET sports = $1`,
+      [otpData]
+    );
+
+    await sendOTPEmail(email, otp);
+    res.json({ success: true });
   } catch (err) {
-    console.error("Error inserting user:", err);
-    res.status(500).json({ error: "Failed to create user." });
+    res.status(500).json({ error: "OTP send failed" });
+  }
+});
+
+// Verify OTP during signup
+router.post("/signup", async (req, res) => {
+  const { name, age, gender, address, sports, email, otp } = req.body;
+
+  // 1. First verify OTP
+  const { rows } = await pool.query(
+    `SELECT sports FROM users 
+     WHERE sports LIKE $1`,
+    [`OTP:${otp}|%`]
+  );
+
+  if (!rows.length) {
+    return res.status(401).json({ error: "Invalid OTP" });
+  }
+
+  // 2. Proceed with actual signup
+  try {
+    await pool.query(
+      `UPDATE users SET 
+       name = $1, age = $2, gender = $3,
+       address = $4, sports = $5
+       WHERE sports LIKE $6`,
+      [name, age, gender, address, sports, `%|${email}`]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Signup failed" });
   }
 });
 
