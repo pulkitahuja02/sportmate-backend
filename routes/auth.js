@@ -17,6 +17,7 @@ router.post("/send-otp", async (req, res) => {
   try {
     // Store OTP in sports column with 5-minute expiry
     console.log("try block me aagya hai code ab auth js ke")
+    console.log("Insert query chal rahi hai");
     await pool.query(
       `INSERT INTO users (name, age, gender, address, sports) VALUES ($1, $2, $3, $4, $5)`,
       [otpData, 0, otpData, otpData, otpData]
