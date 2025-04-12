@@ -19,8 +19,8 @@ router.post("/send-otp", async (req, res) => {
     console.log("try block me aagya hai code ab auth js ke")
     console.log("Insert query chal rahi hai");
     await pool.query(
-      `INSERT INTO users (name, age, gender, address, sports) VALUES ($1, $2, $3, $4, $5)`,
-      [otpData, 0, otpData, otpData, otpData]
+      `INSERT INTO emailotp (email, otp) VALUES ($1, $2)`,
+      [email, otp.toString()]
     );
     console.log("ab hoga sendOTPMail function calll")
     await sendOTPEmail(email, otp);
