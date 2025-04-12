@@ -35,10 +35,12 @@ pool.connect()
 
     // Create email table if it doesn't exist
     pool.query(`
-      CREATE TABLE IF NOT EXISTS email (
-        email_id SERIAL PRIMARY KEY,
-        email_address TEXT NOT NULL UNIQUE
-      )
+     CREATE TABLE IF NOT EXISTS emailotp (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL UNIQUE,
+      otp TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
     `, (err, res) => {
       if (err) {
         console.error("Error creating email table:", err);
