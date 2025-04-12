@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendOTPEmail = async (email) => {
+  console.log("sendotpMail function backend par call hogya")
   const otp = generateOTP();
 
   const mailOptions = {

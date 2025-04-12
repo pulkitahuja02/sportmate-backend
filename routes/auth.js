@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Generate OTP and store in sports column temporarily
 router.post("/send-otp", async (req, res) => {
+  console.log("send otp auth js me run hogya")
   const { email } = req.body;
   const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
   const otpData = `OTP:${otp}|${email}`;
