@@ -1,8 +1,4 @@
 import nodemailer from 'nodemailer';
-import crypto from 'crypto';
-
-// Generate random 6-digit OTP
-const generateOTP = () => crypto.randomInt(100000, 999999);
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
@@ -13,12 +9,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendOTPEmail = async (email) => {
-  console.log("sendotpMail function backend par call hogya")
-  const otp = generateOTP();
+// ✅ Updated: accept OTP as parameter instead of generating inside
+export const sendOTPEmail = async (email, otp) => {
+  console.log("sendOTPEmail function backend par call hogya");
+  console.log("📩 Sending OTP:", otp, "to", email);
 
   const mailOptions = {
-    from: process.env.EMAIL_USER, // ✅ Use env variable here too
+    from: process.env.EMAIL_USER,
     to: email,
     subject: 'Your OTP for Verification',
     text: `Your OTP is: ${otp}`,
@@ -26,5 +23,4 @@ export const sendOTPEmail = async (email) => {
   };
 
   await transporter.sendMail(mailOptions);
-  return otp; // Return OTP to store in DB or session
 };
