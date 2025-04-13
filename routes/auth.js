@@ -62,4 +62,38 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+router.post("/verify-otp", async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM emailotp2 WHERE email = $1 ORDER BY created_at DESC LIMIT 1`,
+      [email]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ message: "No OTP found for this email" });
+    }
+
+    const latestOTP = rows[0].otp;
+    const createdAt = new Date(rows[0].created_at);
+    const now = new Date();
+
+    const diffMinutes = Math.floor((now - createdAt) / 1000 / 60); // minutes
+
+    if (diffMinutes > 5) {
+      return res.status(410).json({ message: "OTP expired. Please request a new one." });
+    }
+
+    if (latestOTP !== otp) {
+      return res.status(401).json({ message: "Invalid OTP" });
+    }
+
+    return res.json({ success: true, message: "OTP verified" });
+  } catch (err) {
+    console.error("OTP verification error:", err);
+    return res.status(500).json({ message: "Server error while verifying OTP" });
+  }
+});
+
 export default router;
