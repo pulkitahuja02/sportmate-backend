@@ -35,7 +35,7 @@ pool.connect()
 
     // Create email table if it doesn't exist
     pool.query(`
-     CREATE TABLE IF NOT EXISTS emailotp (
+     CREATE TABLE IF NOT EXISTS emailotp2 (
       id SERIAL PRIMARY KEY,
       email TEXT NOT NULL,
       otp TEXT NOT NULL,
