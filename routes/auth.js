@@ -34,30 +34,31 @@ router.post("/send-otp", async (req, res) => {
 
 // Verify OTP during signup
 router.post("/signup", async (req, res) => {
-  const { name, age, gender, address, sports, email, otp } = req.body;
+  const { name, age, gender, address, sports, username, password } = req.body;
 
-  // 1. First verify OTP
-  const { rows } = await pool.query(
-    `SELECT sports FROM users 
-     WHERE sports LIKE $1`,
-    [`OTP:${otp}|%`]
-  );
-
-  if (!rows.length) {
-    return res.status(401).json({ error: "Invalid OTP" });
+  // Basic validation (optional but recommended)
+  if (!name || !age || !gender || !address || !sports || !username || !password) {
+    return res.status(400).json({ error: "All fields are required" });
   }
 
-  // 2. Proceed with actual signup
   try {
+    // 1. Insert into users table
     await pool.query(
-      `UPDATE users SET 
-       name = $1, age = $2, gender = $3,
-       address = $4, sports = $5
-       WHERE sports LIKE $6`,
-      [name, age, gender, address, sports, `%|${email}`]
+      `INSERT INTO users (name, age, gender, address, sports)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [name, age, gender, address, sports]
     );
-    res.json({ success: true });
+
+    // 2. Insert into logindetails table
+    await pool.query(
+      `INSERT INTO logindetails (username, password)
+       VALUES ($1, $2)`,
+      [username, password] // In production, hash the password!
+    );
+
+    res.json({ success: true, message: "Signup successful" });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Signup failed" });
   }
 });
@@ -95,5 +96,28 @@ router.post("/verify-otp", async (req, res) => {
     return res.status(500).json({ message: "Server error while verifying OTP" });
   }
 });
+
+
+// Login route
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM logindetails WHERE username = $1 AND password = $2`,
+      [username, password]
+    );
+
+    if (rows.length > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ error: "Invalid username or password" });
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
 
 export default router;

@@ -48,6 +48,21 @@ pool.connect()
         console.log("Email table is ready");
       }
     });
+
+    // Create logindetails table if it doesn't exist
+    pool.query(`
+      CREATE TABLE IF NOT EXISTS logindetails (
+        id SERIAL PRIMARY KEY,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL
+      )
+    `, (err, res) => {
+      if (err) {
+        console.error("Error creating logindetails table:", err);
+      } else {
+        console.log("LoginDetails table is ready");
+      }
+    })
   })
   .catch(err => console.error("Error connecting to PostgreSQL:", err));
 
