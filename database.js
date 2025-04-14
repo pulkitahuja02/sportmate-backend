@@ -48,7 +48,21 @@ pool.connect()
         console.log("Email table is ready");
       }
     });
-
+    pool.query(`
+        CREATE TABLE IF NOT EXISTS myprofile (
+          id SERIAL PRIMARY KEY,
+          username VARCHAR(255) UNIQUE NOT NULL,
+          avatarlink VARCHAR(255),
+          status_msg TEXT,
+          FOREIGN KEY (username) REFERENCES logindetails(username)
+        )
+      `, (err, res) => {
+        if (err) {
+          console.error("Error creating myprofile table:", err);
+        } else {
+          console.log("MyProfile table is ready");
+        }
+    });
     // Create logindetails table if it doesn't exist
     pool.query(`
       CREATE TABLE IF NOT EXISTS logindetails (
