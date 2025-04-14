@@ -69,18 +69,18 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/profile", async (req, res) => {
-  const { username, avatarlink, status_msg } = req.body;
+router.get("/profile", async (req, res) => {
+  // Assuming the username is stored in the session or token
+  const username = req.user?.username; // or get it from the session or JWT token
 
-  // Basic validation (optional but recommended)
   if (!username) {
     return res.status(400).json({ error: "Username is required" });
   }
 
   try {
-    // 1. Check if the username exists in the myprofile table
+    // Fetch the user profile from the myprofile table
     const result = await pool.query(
-      `SELECT * FROM myprofile WHERE username = $1`,
+      `SELECT username, avatarlink, status_msg FROM myprofile WHERE username = $1`,
       [username]
     );
 
@@ -88,18 +88,14 @@ router.post("/profile", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // 2. Update avatarlink and status_msg in myprofile table
-    await pool.query(
-      `UPDATE myprofile SET avatarlink = $1, status_msg = $2 WHERE username = $3`,
-      [avatarlink || null, status_msg || null, username]
-    );
-
-    res.json({ success: true, message: "Profile updated successfully" });
+    // Return the profile data
+    res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Profile update failed" });
+    res.status(500).json({ error: "Profile fetch failed" });
   }
 });
+
 
 router.post("/verify-otp", async (req, res) => {
   const { email, otp } = req.body;
