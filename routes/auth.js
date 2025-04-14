@@ -36,7 +36,6 @@ router.post("/send-otp", async (req, res) => {
 router.post("/signup", async (req, res) => {
   const { name, age, gender, address, sports, username, password } = req.body;
 
-  // Basic validation (optional but recommended)
   if (!name || !age || !gender || !address || !sports || !username || !password) {
     return res.status(400).json({ error: "All fields are required" });
   }
@@ -56,12 +55,20 @@ router.post("/signup", async (req, res) => {
       [username, password] // In production, hash the password!
     );
 
+    // 3. Insert into myprofile table with default NULL values for avatarlink and status_msg
+    await pool.query(
+      `INSERT INTO myprofile (username, avatarlink, status_msg)
+       VALUES ($1, NULL, NULL)`,
+      [username]
+    );
+
     res.json({ success: true, message: "Signup successful" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Signup failed" });
   }
 });
+
 
 router.post("/verify-otp", async (req, res) => {
   const { email, otp } = req.body;

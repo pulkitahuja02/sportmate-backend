@@ -3,11 +3,11 @@ const { Pool } = pkg;
 
 // PostgreSQL connection setup
 const pool = new Pool({
-  user: process.env.DB_USER,       // "render"
-  host: process.env.DB_HOST,       // "dpg-cva45vt2ng1s73fg04ag-a"
-  database: process.env.DB_NAME,   // "sportmate"
-  password: process.env.DB_PASSWORD, // "your_actual_password"
-  port: process.env.DB_PORT || 5432, // "5432"
+  user: process.env.DB_USER,       
+  host: process.env.DB_HOST,       
+  database: process.env.DB_NAME,   
+  password: process.env.DB_PASSWORD, 
+  port: process.env.DB_PORT || 5432, 
 });
 
 // Test database connection
