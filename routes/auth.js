@@ -69,6 +69,37 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+router.post("/profile", async (req, res) => {
+  const { username, avatarlink, status_msg } = req.body;
+
+  // Basic validation (optional but recommended)
+  if (!username) {
+    return res.status(400).json({ error: "Username is required" });
+  }
+
+  try {
+    // 1. Check if the username exists in the myprofile table
+    const result = await pool.query(
+      `SELECT * FROM myprofile WHERE username = $1`,
+      [username]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // 2. Update avatarlink and status_msg in myprofile table
+    await pool.query(
+      `UPDATE myprofile SET avatarlink = $1, status_msg = $2 WHERE username = $3`,
+      [avatarlink || null, status_msg || null, username]
+    );
+
+    res.json({ success: true, message: "Profile updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Profile update failed" });
+  }
+});
 
 router.post("/verify-otp", async (req, res) => {
   const { email, otp } = req.body;
