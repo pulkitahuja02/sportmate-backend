@@ -134,29 +134,39 @@ router.post("/verify-otp", async (req, res) => {
 
 
 router.post("/login", async (req, res) => {
+  console.log("1. Login request received. Body:", req.body); // Debug input
+
   const { username, password } = req.body;
+  console.log("2. Extracted credentials:", { username, password }); // Debug credentials
 
   try {
+    console.log("3. Executing DB query...");
     const { rows } = await pool.query(
       `SELECT * FROM logindetails WHERE username = $1 AND password = $2`,
       [username, password]
     );
+    console.log("4. DB query completed. Rows found:", rows.length); // Debug query results
 
     if (rows.length > 0) {
-      req.session.username = username; // ✅ Session set
-      req.session.save((err) => {     // ✅ Force-save session
+      console.log("5. Valid user found. Setting session...");
+      req.session.username = username;
+      console.log("6. Session before save:", req.session); // Debug session
+
+      req.session.save((err) => {
         if (err) {
-          console.error("Session save error:", err);
-          res.status(500).json({ error: "Failed to save session" });
-        } else {
-          res.json({ success: true });
+          console.error("7. Session save FAILED:", err); // Debug session error
+          return res.status(500).json({ error: "Session save failed" });
         }
+        console.log("8. Session saved successfully!"); // Debug success
+        console.log("9. Final session:", req.session); // Verify session data
+        res.json({ success: true, username });
       });
     } else {
+      console.log("10. Invalid credentials - no user found"); // Debug auth failure
       res.status(401).json({ error: "Invalid username or password" });
     }
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("11. Unexpected error:", err); // Debug try-catch errors
     res.status(500).json({ error: "Something went wrong" });
   }
 });
