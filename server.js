@@ -15,15 +15,15 @@ app.use(cors({
 // Middleware: Body parser
 app.use(express.json());
 
-// Sessions middleware
 app.use(session({
-  secret: "your_super_secret_key",
+  secret: "pullu02020202020202020202020",
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: true,        // ✅ just for testing (prod me true hi rakhna)
-    sameSite: "none",     // ✅ required for cross-origin cookies
-    maxAge: 1000 * 60 * 60 * 24
+    secure: true, // Must be true for HTTPS
+    sameSite: "none", // Required for cross-site
+    httpOnly: true,
+    domain: "sportmate-backend-i35i.onrender.com" // ⚠️ Critical for Render
   }
 }));
 // Routes
