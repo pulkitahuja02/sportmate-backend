@@ -15,18 +15,17 @@ app.use(cors({
 // Middleware: Body parser
 app.use(express.json());
 
-// Middleware: Sessions
+// Sessions middleware
 app.use(session({
-  secret: "your_super_secret_key", // Change this in production
+  secret: "your_super_secret_key",
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: true,       // Must be true if you're on HTTPS (like Render)
-    sameSite: "none",   // Required for cross-origin cookies
-    maxAge: 1000 * 60 * 60 * 24 // 1 day session
+    secure: false,        // ✅ just for testing (prod me true hi rakhna)
+    sameSite: "none",     // ✅ required for cross-origin cookies
+    maxAge: 1000 * 60 * 60 * 24
   }
 }));
-
 // Routes
 app.use("/api/auth", authRoutes);
 
