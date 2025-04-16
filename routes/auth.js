@@ -69,32 +69,32 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.get("/profile", async (req, res) => {
-  // Fetch username from session
-  const username = req.session.username;  // session se username le rahe hain
+  router.get("/profile", async (req, res) => {
+    // Fetch username from session
+    const username = req.session.username;  // session se username le rahe hain
 
-  if (!username) {
-    return res.status(400).json({ error: "Username is required" });
-  }
-
-  try {
-    // Fetch the user profile from the myprofile table
-    const result = await pool.query(
-      `SELECT username, avatarlink, status_msg FROM myprofile WHERE username = $1`,
-      [username]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
     }
 
-    // Return the profile data
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Profile fetch failed" });
-  }
-});
+    try {
+      // Fetch the user profile from the myprofile table
+      const result = await pool.query(
+        `SELECT username, avatarlink, status_msg FROM myprofile WHERE username = $1`,
+        [username]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Return the profile data
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Profile fetch failed" });
+    }
+  });
 
 
 
@@ -133,7 +133,6 @@ router.post("/verify-otp", async (req, res) => {
 });
 
 
-// Login route
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -144,10 +143,15 @@ router.post("/login", async (req, res) => {
     );
 
     if (rows.length > 0) {
-      // ✅ Store username in session
-      req.session.username = username;
-
-      res.json({ success: true });
+      req.session.username = username; // ✅ Session set
+      req.session.save((err) => {     // ✅ Force-save session
+        if (err) {
+          console.error("Session save error:", err);
+          res.status(500).json({ error: "Failed to save session" });
+        } else {
+          res.json({ success: true });
+        }
+      });
     } else {
       res.status(401).json({ error: "Invalid username or password" });
     }
@@ -156,7 +160,5 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 });
-
-
 
 export default router;
