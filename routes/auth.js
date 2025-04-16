@@ -70,8 +70,8 @@ router.post("/signup", async (req, res) => {
 });
 
 router.get("/profile", async (req, res) => {
-  // Assuming the username is stored in the session or token
-  const username = req.user?.username; // or get it from the session or JWT token
+  // Fetch username from session
+  const username = req.session.username;  // session se username le rahe hain
 
   if (!username) {
     return res.status(400).json({ error: "Username is required" });
@@ -95,6 +95,7 @@ router.get("/profile", async (req, res) => {
     res.status(500).json({ error: "Profile fetch failed" });
   }
 });
+
 
 
 router.post("/verify-otp", async (req, res) => {
@@ -143,6 +144,9 @@ router.post("/login", async (req, res) => {
     );
 
     if (rows.length > 0) {
+      // ✅ Store username in session
+      req.session.username = username;
+
       res.json({ success: true });
     } else {
       res.status(401).json({ error: "Invalid username or password" });
@@ -152,6 +156,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 });
+
 
 
 export default router;
