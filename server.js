@@ -21,7 +21,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,        // ✅ just for testing (prod me true hi rakhna)
+    secure: true,        // ✅ just for testing (prod me true hi rakhna)
     sameSite: "none",     // ✅ required for cross-origin cookies
     maxAge: 1000 * 60 * 60 * 24
   }
