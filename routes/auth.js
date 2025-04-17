@@ -79,7 +79,7 @@ router.post("/signup", async (req, res) => {
     // // Step 3: Extract username
     // const username = sessionData.username
     const username = "tanishq"
-    console.log("req session tani: ", req.sessions)
+    console.log("req tani: ", req)
 
     if (!username) {
       return res.status(400).json({ error: "Username is required" });
