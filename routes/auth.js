@@ -76,15 +76,15 @@ router.post("/signup", async (req, res) => {
     console.log('1.tani Session ID:', sessionId); // Should show something like 'P6W3-0H3oEyNl6qIm9faDdPbpc3UD53W'
 
     // 2. Get the session data string from store
-    const sessionDataString = req.sessionStore.sessions[sessionId];
+    const sessionDataString = req.sessionStore.sessions
     console.log('2.tani Raw session data (string):', sessionDataString); // Should show the JSON string
 
     // 3. Parse the JSON string
-    const sessionData = JSON.parse(sessionDataString);
-    console.log('3.tani Parsed session data (object):', sessionData); // Should show the parsed object
+    // const sessionData = JSON.parse(sessionDataString);
+    // console.log('3.tani Parsed session data (object):', sessionData); // Should show the parsed object
 
-    // 4. Extract username
-    const username = sessionData.username;
+    // // 4. Extract username
+    // const username = sessionData.username;
     console.log('4.tani Extracted username:', username); // Should show 'pullu07'
 
     console.log("req tani: ", username);
