@@ -71,7 +71,8 @@ router.post("/signup", async (req, res) => {
 
   router.get("/profile", async (req, res) => {
     // Fetch username from session
-    const username = req.session.username;  // session se username le rahe hain
+    const username = req.session.username; 
+    console.log("request: ", req) // session se username le rahe hain
 
     if (!username) {
       return res.status(400).json({ error: "Username is required" });
