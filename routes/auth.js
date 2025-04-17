@@ -193,4 +193,24 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// New route for updates (POST)
+router.post("/update-profile", async (req, res) => {
+  const { username, avatarlink, status_msg } = req.body;
+
+  try {
+    // Update in database
+    await pool.query(
+      `UPDATE myprofile 
+       SET avatarlink = $1, status_msg = $2 
+       WHERE username = $3`,
+      [avatarlink, status_msg, username]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
+  
 export default router;
