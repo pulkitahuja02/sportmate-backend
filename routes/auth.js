@@ -72,11 +72,17 @@ router.post("/signup", async (req, res) => {
   router.get("/profile", async (req, res) => {
     // 1. Get the session ID from the request
     // 1. Get the session ID from the request
-    const sessionId = req.sessionID;
-    console.log('1.tani Session ID:', sessionId); // Should show something like 'P6W3-0H3oEyNl6qIm9faDdPbpc3UD53W'
+
+        // Get the first key
+    const firstKey = Object.keys(req.sessionStore.sessions)[0]; // "key1"
+    console.log("tani key: ", firstKey)
+
+    // Get its value
+    const firstValue = obj[firstKey];
+    console.log("tani value: ", firstKey)
 
     // 2. Get the session data string from store
-    const sessionDataString = req.sessionStore.sessions
+    const sessionDataString = firstValue
     console.log('2.tani Raw session data (string):', sessionDataString); // Should show the JSON string
 
     // 3. Parse the JSON string
