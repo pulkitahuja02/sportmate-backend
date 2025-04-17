@@ -70,16 +70,19 @@ router.post("/signup", async (req, res) => {
 });
 
   router.get("/profile", async (req, res) => {
-    // Fetch username from session
-    // const sessionKey = Object.keys(req.sessions)[0]; // 'ofZrsypmZ5N3H1SPEz-kurps0O16NSR4'
+    // 1. Get the session ID from the request
+    const sessionId = req.sessionID; // 'P6W3-0H3oEyNl6qIm9faDdPbpc3UD53W'
 
-    // // Step 2: Parse the JSON string to object
-    // const sessionData = JSON.parse(sessions[sessionKey]);
+    // 2. Get the session data string from store
+    const sessionDataString = req.sessionStore.sessions[sessionId];
 
-    // // Step 3: Extract username
-    // const username = sessionData.username
-    const username = "tanishq"
-    console.log("req tani: ", req)
+    // 3. Parse the JSON string
+    const sessionData = JSON.parse(sessionDataString);
+
+    // 4. Extract username
+    const username = sessionData.username; // "pullu07"
+
+    console.log("req tani: ", username);
 
     if (!username) {
       return res.status(400).json({ error: "Username is required" });
